@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prenotazione Evento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Nasconde le scrollbar */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .floating-x {
+            position: absolute;
+            width: 120px; /* Aumentato per ingrandire leggermente */
+            height: 120px; /* Aumentato per ingrandire leggermente */
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            z-index: 2; /* Porta il contenitore sopra le X */
+        }
+
+        .container img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"] {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #fff;
+            background: linear-gradient(135deg, #00A99D, #00743F, #00B398); /* Gradient basato sui colori del logo */
+            background-size: 200% 200%;
+            transition: background-position 0.5s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-position: 100% 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenitore del form -->
+    <div class="container">
+        <img src="next-evolution.jpg" alt="Next Evolution Logo">
+        <h1>Prenotazione Evento</h1>
+        <form id="prenota-form">
+            <input type="text" id="nome" name="nome" placeholder="Nome" required>
+            <input type="text" id="cognome" name="cognome" placeholder="Cognome" required>
+            <input type="number" id="eta" name="eta" placeholder="Età" required>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            <input type="submit" value="Prenota">
+        </form>
+        <div class="footer">
+            © 2024 Next Evolution
+        </div>
+    </div>
+
+    <!-- Aumentiamo il numero delle "X" galleggianti -->
+    <img src="x-logo.png" class="floating-x" id="x1">
+    <img src="x-logo.png" class="floating-x" id="x2">
+    <img src="x-logo.png" class="floating-x" id="x3">
+    <img src="x-logo.png" class="floating-x" id="x4">
+    <img src="x-logo.png" class="floating-x" id="x5">
+    <img src="x-logo.png" class="floating-x" id="x6">
+    <img src="x-logo.png" class="floating-x" id="x7">
+    <img src="x-logo.png" class="floating-x" id="x8">
+    <img src="x-logo.png" class="floating-x" id="x9">
+    <img src="x-logo.png" class="floating-x" id="x10">
+
+    <script>
+        document.getElementById('prenota-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = {
+                nome: document.getElementById('nome').value,
+                cognome: document.getElementById('cognome').value,
+                eta: document.getElementById('eta').value,
+                email: document.getElementById('email').value,
+            };
+
+            fetch('http://localhost:3000/prenota', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Errore nella comunicazione con il server:', error));
+        });
+
+        // Funzione per far muovere gli elementi "X" sullo schermo
+        function animateX(element) {
+            const rect = element.getBoundingClientRect();
+            let x = Math.random() * (window.innerWidth - rect.width);
+            let y = Math.random() * (window.innerHeight - rect.height);
+            let xSpeed = (Math.random() * 2 + 1) * (Math.random() > 0.5 ? 1 : -1); // Velocità casuale con direzione
+            let ySpeed = (Math.random() * 2 + 1) * (Math.random() > 0.5 ? 1 : -1);
+
+            function move() {
+                x += xSpeed;
+                y += ySpeed;
+
+                // Verifica collisione con i bordi dello schermo
+                if (x <= 0 || x + rect.width >= window.innerWidth) xSpeed *= -1;
+                if (y <= 0 || y + rect.height >= window.innerHeight) ySpeed *= -1;
+
+                element.style.left = `${x}px`;
+                element.style.top = `${y}px`;
+
+                requestAnimationFrame(move);
+            }
+
+            move();
+        }
+
+        // Posiziona e anima ogni "X"
+        document.querySelectorAll('.floating-x').forEach(element => {
+            element.style.left = `${Math.random() * (window.innerWidth - element.clientWidth)}px`;
+            element.style.top = `${Math.random() * (window.innerHeight - element.clientHeight)}px`;
+            animateX(element);
+        });
+    </script>
+</body>
+</html>
